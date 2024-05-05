@@ -4,7 +4,9 @@
 
 This repository contains homework assignments from the FDIP class in 2024. I've implemented various basic algorithms for Digital Image Processing (DIP) and will continue to optimize, expand, and update them.
 
-`git clone https://github.com/seclusioner/FDIP_HW.git`
+``` bash
+git clone https://github.com/seclusioner/FDIP_HW.git
+```
 
 After download, you have to create the project to add all `.h`/`.cpp` files under the same directory, Otherwise you must copy the program files to the project's directory.
 
