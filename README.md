@@ -4,14 +4,18 @@
 
 This repository contains homework assignments from the FDIP class in 2024. I've implemented various basic algorithms for Digital Image Processing (DIP) and will continue to optimize, expand, and update them.
 
-You have to create the project to add all `.h`/`.cpp` files under it.
+`git clone https://github.com/seclusioner/FDIP_HW.git`
+
+After download, you have to create the project to add all `.h`/`.cpp` files under the same directory, Otherwise you must copy the program files to the project's directory.
+
+If you use another IDE, then you may have to **change the settings of compiler**.
 
 ## Implementation
 
 | Item     | Description                   |
 |----------|-------------------------------|
-| IDE      | CodeBlock ver 20.03          |
-| Language | C / C++                      |
+| IDE      | CodeBlock ver 20.03           |
+| Language | C / C++                       |
 
 ## What I've Implemented
 
