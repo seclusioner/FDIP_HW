@@ -2,7 +2,7 @@
 * Title: Digital Image Processing Basic Functions
 * Author: D.S. (Jing Lu)
 * Create: 2024/04/08
-* Update: 2024/04/21
+* Update: 2024/05/26
 *****************************************************/
 
 #include "DIP_Func.h"
@@ -296,6 +296,58 @@ int** EdgePadding(int image[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int k
     for (int i = 0; i < rows + 2 * padding_size; ++i) {
         for (int j = cols + padding_size; j < cols + 2 * padding_size; ++j) {
             padded_image[i][j] = padded_image[i][cols + padding_size - 1];
+        }
+    }
+
+    return padded_image;
+}
+
+/// <summary>
+/// Padding with reflect like np.pad(..., 'reflect') (int type, single channel)
+/// </summary>
+/// <param name="image">Input image</param>
+/// <param name="H">The height of image</param>
+/// <param name="W">The width of image</param>
+/// <param name="kernel_sz">Size of mask (kernel)</param>
+/// <returns>Padded image</returns>
+int** ReflectPadding(int image[MaxBMPSizeX][MaxBMPSizeY], int H, int W, int kernel_sz) {
+    int padding_size = kernel_sz / 2;
+    int new_H = H + 2 * padding_size;
+    int new_W = W + 2 * padding_size;
+    int** padded_image = allocate2DArray(new_H, new_W);
+
+    ////////////////////////// Fill //////////////////////////
+    // Fill the center region with the original image
+    for (int i = 0; i < H; ++i) {
+        for (int j = 0; j < W; ++j) {
+            padded_image[i + padding_size][j + padding_size] = image[i][j];
+        }
+    }
+
+    ////////////////////////// Padding //////////////////////////
+    // Up & Down
+    for (int i = 0; i < padding_size; i++) {
+        for (int j = 0; j < W; j++) {
+            padded_image[padding_size - 1 - i][padding_size + j] = image[i + 1][j]; // top
+            padded_image[H + padding_size + i][padding_size + j] = image[H - 2 - i][j]; // bottom
+        }
+    }
+
+    // Left & Right
+    for (int i = 0; i < padding_size; i++) {
+        for (int j = 0; j < H; j++) {
+            padded_image[padding_size + j][padding_size - 1 - i] = image[j][i + 1]; // left
+            padded_image[padding_size + j][W + padding_size + i] = image[j][W - 2 - i]; // right
+        }
+    }
+
+    // Fill the four corners
+    for (int i = 0; i < padding_size; i++) {
+        for (int j = 0; j < padding_size; j++) {
+            padded_image[padding_size - 1 - i][padding_size - 1 - j] = image[i + 1][j + 1];         // top-left
+            padded_image[padding_size - 1 - i][W + padding_size + j] = image[i + 1][W - 2 - j];     // top-right
+            padded_image[H + padding_size + i][padding_size - 1 - j] = image[H - 2 - i][j + 1];     // bottom-left
+            padded_image[H + padding_size + i][W + padding_size + j] = image[H - 2 - i][W - 2 - j]; // bottom-right
         }
     }
 

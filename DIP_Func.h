@@ -40,6 +40,7 @@ void Convolve2D(int** paddedMatrix, float** mask, int matrix[MaxBMPSizeX][MaxBMP
 
 int** ZeroPadding(int matrix[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int kernel_sz);
 int** EdgePadding(int image[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int kernel_sz);
+int** ReflectPadding(int image[MaxBMPSizeX][MaxBMPSizeY], int H, int W, int kernel_sz);
 
 // Algorithm Functions
 void Negative(int R[MaxBMPSizeX][MaxBMPSizeY], int G[MaxBMPSizeX][MaxBMPSizeY], int B[MaxBMPSizeX][MaxBMPSizeY],
