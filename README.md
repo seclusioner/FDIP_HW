@@ -29,8 +29,12 @@ If you use another IDE, then you may have to **change the settings of compiler**
 
 ### Padding
 
-- Zeropadding
-- EdgePadding
+Padded like np.pad(..., mode='...') function
+
+Functions implementation so far:
+- Zero Padding
+- Edge Padding
+- Reflect Padding
 
 ### Filters
 
