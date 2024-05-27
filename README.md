@@ -29,12 +29,16 @@ If you use another IDE, then you may have to **change the settings of compiler**
 
 ### Padding
 
-Padded like np.pad(..., mode='...') function
+All padding functions are in `Padding.cpp` and define at `Padding.h`, to padded like python's np.pad(..., mode='...') function.
 
-Functions implementation so far:
-- Zero Padding
+Padding's mode:
+- Constant Padding (have to give the constant value)
 - Edge Padding
 - Reflect Padding
+- Symmetric Padding
+- Max/Min Padding
+- Mean Padding
+- Median Padding
 
 ### Filters
 
