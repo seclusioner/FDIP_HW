@@ -2,10 +2,11 @@
 * Title: Digital Image Processing Basic Functions
 * Author: D.S. (Jing Lu)
 * Create: 2024/04/08
-* Update: 2024/05/26
+* Update: 2024/05/27
 *****************************************************/
 
 #include "DIP_Func.h"
+#include "Padding.h"
 
 int L = pow(2, BIT) - 1;
 
@@ -97,11 +98,13 @@ void selectionSort(int arr[], int n) {
 /// <returns></returns>
 int Median(int* arr, int len) {
     sort(arr, arr + len);
-
-    if (len % 2 != 0)
+    if (len % 2 == 0) {
+        double median = (arr[len / 2 - 1] + arr[len / 2]) / 2.0;
+        return floor(median * 1000.0 + 0.5) / 1000.0;
+    }
+    else {
         return arr[len / 2];
-    else
-        return (arr[len / 2] + arr[len / 2 - 1]) / 2;
+    }
 }
 
 ////////////// Binomial Calculation //////////////
@@ -225,135 +228,8 @@ float** Bino_mask(float* arr, int n) {
 }
 
 /**************************************************
-Padding
+Padding (updating)
 **************************************************/
-
-/// <summary>
-/// Padding with zeros (int type, single channel)
-/// </summary>
-/// <param name="matrix">Input matr</param>
-/// <param name="rows">The width of image</param>
-/// <param name="cols">The height of image</param>
-/// <param name="kernel_sz">Size of a mask</param>
-/// <returns>Padded image</returns>
-int** ZeroPadding(int matrix[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int kernel_sz) {
-    int padding_sz = kernel_sz / 2;
-    int** paddedMatrix = allocate2DArray(rows + padding_sz * 2, cols + padding_sz * 2);
-
-    for (int i = padding_sz; i < rows + padding_sz; i++) {
-        for (int j = padding_sz; j < cols + padding_sz; j++) {
-            int x = i - (padding_sz);
-            int y = j - (padding_sz);
-            paddedMatrix[i][j] = matrix[x][y];
-        }
-    }
-
-    return paddedMatrix;
-}
-
-/// <summary>
-/// Padding with copy image's edge (int type, single channel)
-/// </summary>
-/// <param name="image">Input image</param>
-/// <param name="rows">The width of image</param>
-/// <param name="cols">The height of image</param>
-/// <param name="kernel_sz">Size of a mask</param>
-/// <returns>Padded image</returns>
-int** EdgePadding(int image[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int kernel_sz){
-    int padding_size = kernel_sz / 2;
-    int** padded_image = allocate2DArray(rows + padding_size * 2, cols + padding_size * 2);
-
-    ////////////////////////// Fill //////////////////////////
-    // Fill the center region with the original image
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            padded_image[i + padding_size][j + padding_size] = image[i][j];
-        }
-    }
-
-    // Fill the top rows with the edge values
-    for (int i = 0; i < padding_size; ++i) {
-        for (int j = 0; j < cols + 2 * padding_size; ++j) {
-            padded_image[i][j] = padded_image[padding_size][j];
-        }
-    }
-
-    // Fill the bottom rows with the edge values
-    for (int i = rows + padding_size; i < rows + 2 * padding_size; ++i) {
-        for (int j = 0; j < cols + 2 * padding_size; ++j) {
-            padded_image[i][j] = padded_image[rows + padding_size - 1][j];
-        }
-    }
-
-    // Fill the left columns with the edge values
-    for (int i = 0; i < rows + 2 * padding_size; ++i) {
-        for (int j = 0; j < padding_size; ++j) {
-            padded_image[i][j] = padded_image[i][padding_size];
-        }
-    }
-
-    // Fill the right columns with the edge values
-    for (int i = 0; i < rows + 2 * padding_size; ++i) {
-        for (int j = cols + padding_size; j < cols + 2 * padding_size; ++j) {
-            padded_image[i][j] = padded_image[i][cols + padding_size - 1];
-        }
-    }
-
-    return padded_image;
-}
-
-/// <summary>
-/// Padding with reflect like np.pad(..., 'reflect') (int type, single channel)
-/// </summary>
-/// <param name="image">Input image</param>
-/// <param name="H">The height of image</param>
-/// <param name="W">The width of image</param>
-/// <param name="kernel_sz">Size of mask (kernel)</param>
-/// <returns>Padded image</returns>
-int** ReflectPadding(int image[MaxBMPSizeX][MaxBMPSizeY], int H, int W, int kernel_sz) {
-    int padding_size = kernel_sz / 2;
-    int new_H = H + 2 * padding_size;
-    int new_W = W + 2 * padding_size;
-    int** padded_image = allocate2DArray(new_H, new_W);
-
-    ////////////////////////// Fill //////////////////////////
-    // Fill the center region with the original image
-    for (int i = 0; i < H; ++i) {
-        for (int j = 0; j < W; ++j) {
-            padded_image[i + padding_size][j + padding_size] = image[i][j];
-        }
-    }
-
-    ////////////////////////// Padding //////////////////////////
-    // Up & Down
-    for (int i = 0; i < padding_size; i++) {
-        for (int j = 0; j < W; j++) {
-            padded_image[padding_size - 1 - i][padding_size + j] = image[i + 1][j]; // top
-            padded_image[H + padding_size + i][padding_size + j] = image[H - 2 - i][j]; // bottom
-        }
-    }
-
-    // Left & Right
-    for (int i = 0; i < padding_size; i++) {
-        for (int j = 0; j < H; j++) {
-            padded_image[padding_size + j][padding_size - 1 - i] = image[j][i + 1]; // left
-            padded_image[padding_size + j][W + padding_size + i] = image[j][W - 2 - i]; // right
-        }
-    }
-
-    // Fill the four corners
-    for (int i = 0; i < padding_size; i++) {
-        for (int j = 0; j < padding_size; j++) {
-            padded_image[padding_size - 1 - i][padding_size - 1 - j] = image[i + 1][j + 1];         // top-left
-            padded_image[padding_size - 1 - i][W + padding_size + j] = image[i + 1][W - 2 - j];     // top-right
-            padded_image[H + padding_size + i][padding_size - 1 - j] = image[H - 2 - i][j + 1];     // bottom-left
-            padded_image[H + padding_size + i][W + padding_size + j] = image[H - 2 - i][W - 2 - j]; // bottom-right
-        }
-    }
-
-    return padded_image;
-}
-
 /// <summary>
 /// Padding with zeros (float type, single channel)
 /// </summary>
@@ -875,7 +751,7 @@ void Canny(int image[MaxBMPSizeX][MaxBMPSizeY], int result[MaxBMPSizeX][MaxBMPSi
     int kernelsize = 5; // for gaussian filter
     int paddingsize = kernelsize / 2;
 
-    int** paddedMatrix = EdgePadding(image, rows, cols, 5);
+    int** paddedMatrix = Pad(image, rows, cols, paddingsize, edge, 0);
     GaussianFilter(paddedMatrix, image, rows, cols, 5, 1);
 
     free2DArray(paddedMatrix, rows + paddingsize * 2);

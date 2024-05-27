@@ -38,10 +38,6 @@ void swap(int* xp, int* yp);
 // Basic Functions
 void Convolve2D(int** paddedMatrix, float** mask, int matrix[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int kernelSize);
 
-int** ZeroPadding(int matrix[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int kernel_sz);
-int** EdgePadding(int image[MaxBMPSizeX][MaxBMPSizeY], int rows, int cols, int kernel_sz);
-int** ReflectPadding(int image[MaxBMPSizeX][MaxBMPSizeY], int H, int W, int kernel_sz);
-
 // Algorithm Functions
 void Negative(int R[MaxBMPSizeX][MaxBMPSizeY], int G[MaxBMPSizeX][MaxBMPSizeY], int B[MaxBMPSizeX][MaxBMPSizeY],
               int r[MaxBMPSizeX][MaxBMPSizeY], int g[MaxBMPSizeX][MaxBMPSizeY], int b[MaxBMPSizeX][MaxBMPSizeY],

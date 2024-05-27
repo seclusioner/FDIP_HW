@@ -20,6 +20,7 @@
 
 #include "bmp.h"
 #include "DIP_Func.h"
+#include "Padding.h"
 
 #define MAXSTRING 100
 
@@ -158,40 +159,32 @@ void User() {
     **********************************************************************/
     switch (problem)
     {
-        case 1: // Median Filter (OK)
+        case 1:
             KERNEL = kernel_input();
             PADDING_SIZE = KERNEL / 2;
 
             cout << "Kernel size: " << KERNEL << "\n";
             cout << "Apply " << KERNEL << " x " << KERNEL << " median filter ..... \n";
             if (Gray_flag) { // Single channel
-                /* ------------------------ Padding ------------------------ */
-                int** paddedMatrix = EdgePadding(R, width, height, KERNEL);
-
-                /* ------------------------ Filter ------------------------ */
+                int** paddedMatrix = Pad(R, height, width, PADDING_SIZE, edge, 0);
                 MedianFilter(paddedMatrix, r, width, height, KERNEL);
-
-                /* ------------------------  Free allocation ------------------------ */
                 free2DArray(paddedMatrix, width + PADDING_SIZE * 2);
             }
             else { // RGB channel
-                /* ------------------------ Padding ------------------------ */
-                int** paddedMatrix_R = EdgePadding(R, width, height, KERNEL);
-                int** paddedMatrix_G = EdgePadding(G, width, height, KERNEL);
-                int** paddedMatrix_B = EdgePadding(B, width, height, KERNEL);
+                int** paddedMatrix_R = Pad(R, height, width, PADDING_SIZE, edge, 0);
+                int** paddedMatrix_G = Pad(G, height, width, PADDING_SIZE, edge, 0);
+                int** paddedMatrix_B = Pad(B, height, width, PADDING_SIZE, edge, 0);
 
-                /* ------------------------ Filter ------------------------ */
                 MedianFilter(paddedMatrix_R, r, width, height, KERNEL);
                 MedianFilter(paddedMatrix_G, g, width, height, KERNEL);
                 MedianFilter(paddedMatrix_B, b, width, height, KERNEL);
 
-                /* ------------------------  Free allocation ------------------------ */
                 free2DArray(paddedMatrix_R, width + PADDING_SIZE * 2);
                 free2DArray(paddedMatrix_G, width + PADDING_SIZE * 2);
                 free2DArray(paddedMatrix_B, width + PADDING_SIZE * 2);
             }
             break;
-        case 2: // Binomial Filter
+        case 2:
             // Decide LPF / HPF
             bool HPF;
             char filter;
@@ -216,14 +209,14 @@ void User() {
             }
 
             if (Gray_flag) {
-                int** paddedMatrix = EdgePadding(R, width, height, KERNEL);
+                int** paddedMatrix = Pad(R, height, width, PADDING_SIZE, edge, 0);
                 Bino_Filter(paddedMatrix, r, width, height, KERNEL, HPF);
                 free2DArray(paddedMatrix, width + PADDING_SIZE * 2);
             }
             else{
-                int** paddedMatrix_R = EdgePadding(R, width, height, KERNEL);
-                int** paddedMatrix_G = EdgePadding(G, width, height, KERNEL);
-                int** paddedMatrix_B = EdgePadding(B, width, height, KERNEL);
+                int** paddedMatrix_R = Pad(R, height, width, PADDING_SIZE, edge, 0);
+                int** paddedMatrix_G = Pad(G, height, width, PADDING_SIZE, edge, 0);
+                int** paddedMatrix_B = Pad(B, height, width, PADDING_SIZE, edge, 0);
 
                 Bino_Filter(paddedMatrix_R, r, width, height, KERNEL, HPF);
                 Bino_Filter(paddedMatrix_G, g, width, height, KERNEL, HPF);
@@ -235,7 +228,7 @@ void User() {
             }
             break;
 
-        case 3: // HE (OK)
+        case 3:
             cout << "Apply Histogram Equalization ..... \n";
             if(Gray_flag){
                 Histo_Equal(R, r, width, height);
@@ -249,15 +242,19 @@ void User() {
             break;
         case 4: // Edge Sharpening
             cout << "Apply Edge Sharpening ..... \n";
+
+            KERNEL = 3;
+            PADDING_SIZE = KERNEL / 2;
+
             if (Gray_flag) {
-                int** paddedMatrix = ZeroPadding(R, width, height, 3);
+                int** paddedMatrix = Pad(R, height, width, PADDING_SIZE, constant, 0);
                 EdgeSharpen(paddedMatrix, r, width, height, 0.2);
                 free2DArray(paddedMatrix, width + PADDING_SIZE * 2);
             }
             else {
-                int** paddedMatrix_R = ZeroPadding(R, width, height, 3);
-                int** paddedMatrix_G = ZeroPadding(G, width, height, 3);
-                int** paddedMatrix_B = ZeroPadding(B, width, height, 3);
+                int** paddedMatrix_R = Pad(R, height, width, PADDING_SIZE, constant, 0);
+                int** paddedMatrix_G = Pad(G, height, width, PADDING_SIZE, constant, 0);
+                int** paddedMatrix_B = Pad(B, height, width, PADDING_SIZE, constant, 0);
 
                 EdgeSharpen(paddedMatrix_R, r, width, height, 0.2);
                 EdgeSharpen(paddedMatrix_G, g, width, height, 0.2);
@@ -316,19 +313,20 @@ void User() {
 
             // Settings param .
             KERNEL = 13;
-            float sigma = 5;
+            float sigma = 2;
             PADDING_SIZE = KERNEL / 2;
 
             if(Gray_flag){ // single channel
-                int** paddedMatrix = EdgePadding(R, width, height, KERNEL);
+                //int** paddedMatrix = EdgePadding(R, width, height, KERNEL);
+                int** paddedMatrix = Pad(R, height, width, PADDING_SIZE, constant, 0);
                 GaussianFilter(paddedMatrix, r, width, height, KERNEL, sigma);
                 free2DArray(paddedMatrix, width + PADDING_SIZE * 2);
 
             }else{ // rgb channel
                 // Padding
-                int** paddedMatrix_R = EdgePadding(R, width, height, KERNEL);
-                int** paddedMatrix_G = EdgePadding(G, width, height, KERNEL);
-                int** paddedMatrix_B = EdgePadding(B, width, height, KERNEL);
+                int** paddedMatrix_R = Pad(R, height, width, PADDING_SIZE, edge, 0);
+                int** paddedMatrix_G = Pad(G, height, width, PADDING_SIZE, edge, 0);
+                int** paddedMatrix_B = Pad(B, height, width, PADDING_SIZE, edge, 0);
 
                 // Processed
                 GaussianFilter(paddedMatrix_R, r, width, height, KERNEL, sigma);
@@ -340,9 +338,6 @@ void User() {
                 free2DArray(paddedMatrix_G, width + PADDING_SIZE * 2);
                 free2DArray(paddedMatrix_B, width + PADDING_SIZE * 2);
             }
-
-
-            //exit(1);
             break;
     }
 
